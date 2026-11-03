@@ -1,0 +1,6 @@
+# The repository was initialized in $HOME. Track project files only.
+/*
+!/.gitignore
+!/README.md
+!/edusnap/
+!/.github/
