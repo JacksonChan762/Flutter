@@ -1,38 +1,42 @@
 # Flutter — EduSnap
 
-ITCHI Flutter workshop, **Session 1: environment, MVC, initial demo**.
-The Flutter application lives in [`edusnap/`](edusnap/).
+ITCHI Flutter workshop, Sessions 1–2. Application: [`edusnap/`](edusnap/).
+Development branch: `dev/jackson`; `main` is not modified.
 
 ## Run
-
-Install the Flutter stable SDK and add its `bin` directory to your PATH.
-In the Coder workspace it is installed at `$HOME/.local/share/flutter`.
 
 ```sh
 export PATH="$HOME/.local/share/flutter/bin:$PATH"
 cd ~/edusnap
 flutter pub get
 flutter run -d web-server --web-hostname 0.0.0.0 --web-port 8080
-# Or, on a machine with an Android/iOS target:
+# Or on a machine with an Android/iOS target:
 flutter devices
 flutter run
 ```
 
 Forward port 8080 through Coder to open the web demo.
 
-## Session 1 scope
+## Session 2
 
-- EduSnap welcome/list screen, reusable journal card, demo/clear actions.
-- `lib/Models/`: immutable data classes only.
-- `lib/Component/JournalCard/`: reusable View + presentation Controller.
-- `lib/Pages/JournalList/`: Page and Controller together; controller owns data.
-- `lib/Utils/`: shared non-UI date formatting.
-- Widget/controller tests and GitHub Actions checks.
-- Personal development branch: `dev/jackson`; `main` is not modified.
+- HomePage is the List: three sample entries, reusable journal cards.
+- Top-left Settings; top-right Add; tapping a card opens Detail.
+- Add uses a required title and optional note; blank/whitespace title shows a dialog.
+- Saving returns a JournalEntry to Home, which inserts it at the top.
+- Swipe left, confirm deletion; cancelling keeps the entry.
+- Challenge: Detail → Edit reuses AddPage with prefilled fields. Save updates
+  both Detail and List; cancel leaves the original unchanged. Creation time
+  and identity are preserved, including after multiple edits.
+- MVC folders match the workshop: `Models/JournalEntry.dart`,
+  `Pages/HomePage/`, `Pages/Detail/`, `Pages/Add/`, `Pages/Settings/`,
+  `Component/JournalCard/`. PascalCase workshop files explicitly opt out of
+  Dart's filename lint; other recommended lint rules remain enabled.
+- Controllers are initialized once in `initState`, disposed with their page;
+  build methods render state without loading data or side effects.
 
-The sample is **in memory only**. Add/detail/settings navigation, camera/gallery,
-persistent offline storage, and language switching belong to Sessions 2–4 and
-are deliberately not claimed as implemented in Session 1.
+**Memory only:** restarting resets the journal to the three samples.
+No camera, gallery, persistence or language switching is claimed.
+Settings explains these limits rather than showing nonfunctional toggles.
 
 ## Verify
 
@@ -42,18 +46,17 @@ dart format --output=none --set-exit-if-changed lib test
 flutter analyze
 flutter test
 flutter build web
-flutter doctor -v
 ```
+
+See [Session 2 checklist](edusnap/docs/SESSION_2.md) and
+[verification](edusnap/docs/VERIFICATION.md). GitHub Actions runs the same checks.
+Local test success does not assert that remote CI has passed.
 
 ## Environment limitations
 
-This headless Linux Coder workspace does not demonstrate Cursor IDE or
-SourceTree desktop installation, an Android emulator, or an iOS simulator.
-Android SDK/device setup is required for Android runs; iOS requires macOS/Xcode.
-Web build/tests are useful verification, not proof of an emulator run.
-Repository privacy is not changed by this work; verify it in GitHub settings
-before claiming the workshop's private-repository requirement is satisfied.
+This headless Linux Coder workspace has not verified Android/iOS device or
+emulator runs. Android needs an SDK/device; iOS needs macOS/Xcode. Desktop IDE
+setup and repository privacy are not verified or changed.
 
-The repository was originally initialized in `/home/jackson`; the root
-`.gitignore` intentionally excludes unrelated home-directory configuration,
-SSH files, SDKs and caches. Do not run `git add -f` on those files.
+The repository root is `/home/jackson`. Its `.gitignore` excludes unrelated
+home configuration, SSH files, SDKs and caches; never force-add those files.

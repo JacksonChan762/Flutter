@@ -1,4 +1,4 @@
-import '../../Models/journal_entry.dart';
+import '../../Models/JournalEntry.dart';
 import '../../Utils/date_formatter.dart';
 
 /// Presentation adapter shared by journal cards. No page-specific state.

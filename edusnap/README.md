@@ -1,9 +1,8 @@
-# EduSnap — Session 1
+# EduSnap — Session 2
 
-Interactive MVC starter for the ITCHI Flutter workshop. See the
-[root README](../README.md) for setup/run commands, architecture and limits,
-and [Session 1 checklist](docs/SESSION_1.md) for acceptance criteria.
+Four-screen in-memory journal with add, detail, settings, swipe-to-delete,
+and the edit challenge. See the [root README](../README.md) for run commands,
+[Session 2 checklist](docs/SESSION_2.md) for acceptance criteria, and
+[verification](docs/VERIFICATION.md) for test results and environment limits.
 
-The demo uses in-memory sample entries, not persistent storage. There are no
-camera, gallery, add/detail/settings screens or language features yet; those
-are assigned to the subsequent workshop sessions in the supplied PDF.
+Session 1 notes are historical; Session 2 replaces its demo/clear screen.

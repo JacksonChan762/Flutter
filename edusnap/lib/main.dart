@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'Pages/JournalList/journal_list_page.dart';
+import 'Pages/HomePage/HomePage.dart';
 
 void main() => runApp(const EduSnapApp());
 
@@ -14,6 +14,6 @@ class EduSnapApp extends StatelessWidget {
       colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF146C60)),
       useMaterial3: true,
     ),
-    home: const JournalListPage(),
+    home: const HomePage(),
   );
 }
