@@ -1,4 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Requested at runtime by permission_handler when the user picks a photo. -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32"/>
+    <!-- image_picker opens the camera app; declare the feature as optional. -->
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <application
         android:label="edusnap"
         android:name="${applicationName}"

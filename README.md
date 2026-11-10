@@ -1,38 +1,52 @@
 # Flutter — EduSnap
 
-ITCHI Flutter workshop, **Session 1: environment, MVC, initial demo**.
-The Flutter application lives in [`edusnap/`](edusnap/).
+ITCHI Flutter workshop, Sessions 1–3. Application: [`edusnap/`](edusnap/).
+Development branch: `dev/jackson`; `main` is not modified.
 
 ## Run
-
-Install the Flutter stable SDK and add its `bin` directory to your PATH.
-In the Coder workspace it is installed at `$HOME/.local/share/flutter`.
 
 ```sh
 export PATH="$HOME/.local/share/flutter/bin:$PATH"
 cd ~/edusnap
 flutter pub get
 flutter run -d web-server --web-hostname 0.0.0.0 --web-port 8080
-# Or, on a machine with an Android/iOS target:
+# Or on a machine with an Android/iOS target:
 flutter devices
 flutter run
 ```
 
 Forward port 8080 through Coder to open the web demo.
 
-## Session 1 scope
+## Session 2
 
-- EduSnap welcome/list screen, reusable journal card, demo/clear actions.
-- `lib/Models/`: immutable data classes only.
-- `lib/Component/JournalCard/`: reusable View + presentation Controller.
-- `lib/Pages/JournalList/`: Page and Controller together; controller owns data.
-- `lib/Utils/`: shared non-UI date formatting.
-- Widget/controller tests and GitHub Actions checks.
-- Personal development branch: `dev/jackson`; `main` is not modified.
+- HomePage is the List; top-left Settings, top-right Add; tapping a card opens
+  Detail. Add requires a title; swipe left to delete with confirmation.
+- Detail → Edit reuses AddPage with prefilled fields; identity and creation
+  time are preserved.
+- MVC folders match the workshop: `Models/`, `Pages/HomePage|Detail|Add|Settings/`,
+  `Component/JournalCard/`, plus `Services/` and `Utils/`.
 
-The sample is **in memory only**. Add/detail/settings navigation, camera/gallery,
-persistent offline storage, and language switching belong to Sessions 2–4 and
-are deliberately not claimed as implemented in Session 1.
+## Session 3
+
+- **Permissions:** `image_picker` + `permission_handler`; camera and photo
+  library usage strings in `ios/Runner/Info.plist`, `CAMERA` /
+  `READ_MEDIA_IMAGES` in `AndroidManifest.xml`. Asked at the moment of use;
+  denial shows a dialog with an “Open settings” button.
+- **Photo:** Add page picks from camera or gallery, shows a preview, stores the
+  path on `JournalEntry.photoPath`; photos are copied into the app documents
+  folder (`entry_photos/`) so they survive restarts. Cards show a thumbnail,
+  Detail shows the photo.
+- **Local storage:** `shared_preferences` holds the journal as JSON; loaded in
+  `HomePage.initState`, saved after add / edit / delete / clear.
+- **Language:** `flutter_localizations` + `intl` with ARB files in `lib/l10n`
+  (English + Traditional Chinese). Settings toggles the language, the choice is
+  saved and restored on launch. Created dates use the `Created on {date}` /
+  `{date} 建立` placeholder.
+- **Challenge:** Settings shows the photo storage size (`{size} used` /
+  `已使用 {size}`), a Format button (removes unused photos) and a Clear button
+  with double confirmation that deletes all entries and photos (size → 0 KB).
+
+See [Session 3 checklist](edusnap/docs/SESSION_3.md).
 
 ## Verify
 
@@ -42,18 +56,18 @@ dart format --output=none --set-exit-if-changed lib test
 flutter analyze
 flutter test
 flutter build web
-flutter doctor -v
 ```
+
+See [Session 2](edusnap/docs/SESSION_2.md) and
+[Session 3](edusnap/docs/SESSION_3.md) checklists and
+[verification](edusnap/docs/VERIFICATION.md). GitHub Actions runs the same checks.
+Local test success does not assert that remote CI has passed.
 
 ## Environment limitations
 
-This headless Linux Coder workspace does not demonstrate Cursor IDE or
-SourceTree desktop installation, an Android emulator, or an iOS simulator.
-Android SDK/device setup is required for Android runs; iOS requires macOS/Xcode.
-Web build/tests are useful verification, not proof of an emulator run.
-Repository privacy is not changed by this work; verify it in GitHub settings
-before claiming the workshop's private-repository requirement is satisfied.
+This headless Linux Coder workspace has not verified Android/iOS device or
+emulator runs. Android needs an SDK/device; iOS needs macOS/Xcode. Desktop IDE
+setup and repository privacy are not verified or changed.
 
-The repository was originally initialized in `/home/jackson`; the root
-`.gitignore` intentionally excludes unrelated home-directory configuration,
-SSH files, SDKs and caches. Do not run `git add -f` on those files.
+The repository root is `/home/jackson`. Its `.gitignore` excludes unrelated
+home configuration, SSH files, SDKs and caches; never force-add those files.
