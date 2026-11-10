@@ -1,0 +1,94 @@
+{
+  "@@locale": "en",
+  "appTitle": "EduSnap",
+  "homeEmpty": "No moments yet. Tap + to add your first entry.",
+  "homeAddTooltip": "Add entry",
+  "homeSettingsTooltip": "Settings",
+  "deleteDialogTitle": "Delete entry?",
+  "deleteDialogBody": "Delete \"{title}\"? This cannot be undone.",
+  "@deleteDialogBody": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "btnCancel": "Cancel",
+  "btnDelete": "Delete",
+  "btnOk": "OK",
+  "btnSave": "Save",
+  "btnFormat": "Format",
+  "btnClear": "Clear",
+  "addTitle": "Add entry",
+  "editTitle": "Edit entry",
+  "fieldTitle": "Title",
+  "fieldTitleHint": "What did you learn?",
+  "fieldTitleRequired": "Title is required",
+  "fieldNote": "Note (optional)",
+  "titleMissingTitle": "Title missing",
+  "titleMissingBody": "Please enter a title before saving.",
+  "photoAdd": "Add photo",
+  "photoChange": "Change photo",
+  "photoRemove": "Remove photo",
+  "photoCamera": "Take photo",
+  "photoGallery": "Choose from gallery",
+  "photoPermissionTitle": "Permission needed",
+  "photoPermissionBody": "EduSnap needs access to your {source} to add a photo.",
+  "@photoPermissionBody": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "photoSourceCamera": "camera",
+  "photoSourceGallery": "photo library",
+  "photoPermissionOpenSettings": "Open settings",
+  "photoFailed": "Could not open the {source}. Please try again.",
+  "@photoFailed": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "photoPlaceholder": "No photo",
+  "detailTitle": "Detail",
+  "detailEditTooltip": "Edit entry",
+  "detailNoNote": "No note added.",
+  "createdOn": "Created on {date}",
+  "@createdOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsTitle": "Settings",
+  "settingsLanguageSection": "Language",
+  "settingsLanguageEnglish": "English",
+  "settingsLanguageChinese": "繁體中文",
+  "settingsStorageSection": "Local storage",
+  "settingsStorageUsed": "{size} used",
+  "@settingsStorageUsed": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsFormat": "Format",
+  "settingsFormatHint": "Removes photos that no entry uses anymore.",
+  "settingsClear": "Clear all entries",
+  "settingsClearHint": "Deletes every entry and its photo.",
+  "settingsFormatConfirmTitle": "Format storage?",
+  "settingsFormatConfirmBody": "Unused photos will be deleted. Entries stay.",
+  "settingsFormatDone": "Unused photos removed.",
+  "settingsClearConfirmTitle": "Clear all entries?",
+  "settingsClearConfirmBody": "Every entry and its photo will be deleted. This cannot be undone.",
+  "settingsClearFinalTitle": "Are you sure?",
+  "settingsClearFinalBody": "This permanently deletes all entries and photos.",
+  "settingsClearDone": "All entries cleared.",
+  "settingsAboutSection": "About EduSnap",
+  "settingsAboutBody": "EduSnap is an offline photo journal. Entries and photos are stored on this device only."
+}

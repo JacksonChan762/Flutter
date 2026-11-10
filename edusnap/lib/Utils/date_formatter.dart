@@ -1,4 +1,6 @@
-String formatJournalDate(DateTime date) {
-  String two(int value) => value.toString().padLeft(2, '0');
-  return '${date.year}-${two(date.month)}-${two(date.day)}';
-}
+import 'package:intl/intl.dart';
+
+/// Display formatter for entry dates. Storage keeps ISO-8601 strings.
+/// [localeName] comes from Localizations.localeOf(context).toString().
+String formatJournalDate(DateTime date, {String? localeName}) =>
+    DateFormat.yMMMd(localeName).format(date);

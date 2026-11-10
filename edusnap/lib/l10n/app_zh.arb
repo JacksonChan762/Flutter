@@ -1,0 +1,94 @@
+{
+  "@@locale": "zh",
+  "appTitle": "EduSnap",
+  "homeEmpty": "還沒有記錄。按 + 新增第一篇。",
+  "homeAddTooltip": "新增記錄",
+  "homeSettingsTooltip": "設定",
+  "deleteDialogTitle": "刪除記錄？",
+  "deleteDialogBody": "刪除「{title}」？此操作無法復原。",
+  "@deleteDialogBody": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "btnCancel": "取消",
+  "btnDelete": "刪除",
+  "btnOk": "確定",
+  "btnSave": "儲存",
+  "btnFormat": "整理",
+  "btnClear": "清除",
+  "addTitle": "新增記錄",
+  "editTitle": "編輯記錄",
+  "fieldTitle": "標題",
+  "fieldTitleHint": "今天學到什麼？",
+  "fieldTitleRequired": "請輸入標題",
+  "fieldNote": "備註（選填）",
+  "titleMissingTitle": "尚未填寫標題",
+  "titleMissingBody": "儲存前請先輸入標題。",
+  "photoAdd": "加相片",
+  "photoChange": "換相片",
+  "photoRemove": "移除相片",
+  "photoCamera": "拍照",
+  "photoGallery": "從相冊選擇",
+  "photoPermissionTitle": "需要權限",
+  "photoPermissionBody": "EduSnap 需要取用{source}才能加相片。",
+  "@photoPermissionBody": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "photoSourceCamera": "相機",
+  "photoSourceGallery": "相冊",
+  "photoPermissionOpenSettings": "開啟設定",
+  "photoFailed": "無法開啟{source}，請再試一次。",
+  "@photoFailed": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "photoPlaceholder": "尚未加相片",
+  "detailTitle": "詳情",
+  "detailEditTooltip": "編輯記錄",
+  "detailNoNote": "尚未加備註。",
+  "createdOn": "{date} 建立",
+  "@createdOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsTitle": "設定",
+  "settingsLanguageSection": "語言",
+  "settingsLanguageEnglish": "English",
+  "settingsLanguageChinese": "繁體中文",
+  "settingsStorageSection": "本機儲存",
+  "settingsStorageUsed": "已使用 {size}",
+  "@settingsStorageUsed": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsFormat": "整理",
+  "settingsFormatHint": "清除已沒有記錄使用的相片。",
+  "settingsClear": "清除所有記錄",
+  "settingsClearHint": "刪除所有記錄及其相片。",
+  "settingsFormatConfirmTitle": "整理儲存？",
+  "settingsFormatConfirmBody": "將刪除不再使用的相片，記錄保留。",
+  "settingsFormatDone": "已清除多餘相片。",
+  "settingsClearConfirmTitle": "清除所有記錄？",
+  "settingsClearConfirmBody": "所有記錄及其相片將被刪除，無法復原。",
+  "settingsClearFinalTitle": "確定要清除？",
+  "settingsClearFinalBody": "此操作會永久刪除所有記錄和相片。",
+  "settingsClearDone": "已清除所有記錄。",
+  "settingsAboutSection": "關於 EduSnap",
+  "settingsAboutBody": "EduSnap 是離線相片日記。記錄和相片只儲存在本機。"
+}

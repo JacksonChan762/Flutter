@@ -2,48 +2,66 @@
 import 'package:flutter/foundation.dart';
 
 import '../../Models/JournalEntry.dart';
+import '../../Services/journal_repository.dart';
+import '../../Services/photo_store.dart';
 
 class HomePageController extends ChangeNotifier {
-  final List<JournalEntry> _entries = [];
-  List<JournalEntry> get entries => List.unmodifiable(_entries);
+  HomePageController({JournalRepository? repository, PhotoStore? photoStore})
+    : _repository = repository ?? JournalRepository(),
+      _photoStore = photoStore ?? PhotoStore();
 
-  void loadSamples() {
-    if (_entries.isNotEmpty) return;
-    final now = DateTime.now();
-    _entries.addAll([
-      JournalEntry(
-        title: 'My first learning moment',
-        note: 'Today I learned how Flutter widgets build a screen.',
-        createdAt: now,
-      ),
-      JournalEntry(
-        title: 'A little curiosity',
-        note: 'What is the difference between push and pop?',
-        createdAt: now.subtract(const Duration(days: 1)),
-      ),
-      JournalEntry(
-        title: 'Practice makes progress',
-        note: 'I created my first journal model and reusable card.',
-        createdAt: now.subtract(const Duration(days: 2)),
-      ),
-    ]);
+  final JournalRepository _repository;
+  final PhotoStore _photoStore;
+  final List<JournalEntry> _entries = [];
+  bool _loaded = false;
+
+  List<JournalEntry> get entries => List.unmodifiable(_entries);
+  bool get isLoaded => _loaded;
+
+  /// Reads the saved journal once. An empty store keeps an empty journal.
+  Future<void> load() async {
+    final stored = await _repository.load();
+    _entries
+      ..clear()
+      ..addAll(stored);
+    _loaded = true;
     notifyListeners();
   }
 
-  void add(JournalEntry entry) {
+  Future<void> add(JournalEntry entry) async {
     _entries.insert(0, entry);
     notifyListeners();
+    await _persist();
   }
 
-  void update(JournalEntry entry) {
+  Future<void> update(JournalEntry entry) async {
     final index = _entries.indexWhere((item) => item.id == entry.id);
     if (index < 0) return;
+    final previous = _entries[index];
     _entries[index] = entry;
     notifyListeners();
+    if (previous.photoPath != entry.photoPath) {
+      await _photoStore.delete(previous.photoPath);
+    }
+    await _persist();
   }
 
-  void remove(JournalEntry entry) {
+  Future<void> remove(JournalEntry entry) async {
     _entries.removeWhere((item) => item.id == entry.id);
     notifyListeners();
+    await _photoStore.delete(entry.photoPath);
+    await _persist();
   }
+
+  /// Deletes every entry and its photo, then clears the stored list.
+  Future<void> clearAll() async {
+    for (final entry in _entries) {
+      await _photoStore.delete(entry.photoPath);
+    }
+    _entries.clear();
+    notifyListeners();
+    await _repository.clear();
+  }
+
+  Future<void> _persist() => _repository.save(_entries);
 }
