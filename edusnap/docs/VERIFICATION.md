@@ -1,4 +1,45 @@
-# Verification — Session 4 — 2026-11-17
+# Verification — Sessions 1–4 audit — 2026-11-17
+
+All four uploaded presentations were read, including all 38 pages of the
+Session 2 PDF. The [requirement audit](WORKSHOP_AUDIT.md) maps their tasks and
+challenges to code and distinguishes implementation from device acceptance.
+
+The audit added first-run samples without reseeding cleared journals,
+restart-safe entry IDs, non-destructive photo editing with draft cleanup,
+Android-version-specific gallery permissions, a Detail photo placeholder,
+background journal saves, ordered persistence, and safe async notification
+after page disposal. Existing saved entries retain their IDs and photos.
+
+Additional tests use the real JSON repository with a mocked preferences backend
+and actual temporary-file copies for the photo store. They exercise sample
+initialization, cleared-state reopening, saved edits, legacy identities, unique
+IDs, overlapping saves, language reload, file sizes/cleanup, cancelled photo
+edits, draft ownership, copy failure, leaving during a picker wait, Android
+32/33/34 permissions, limited access, permission exceptions, and denied UI.
+These tests do not simulate an OS force-quit or native permission UI.
+
+`flutter doctor -v` confirms Flutter 3.47.9 / Dart 3.13.7. This container still
+lacks the Android SDK, Chrome and GTK development libraries. No iOS target is
+available on Linux. Cursor IDE/CLI and SourceTree workstation setup is not
+verified. Those facts prevent claiming every Session 1 environment checkpoint
+or the native demonstrations is complete.
+
+Public repository visibility and per-session development commits were verified.
+The former private-repo instruction is superseded by Session 4's public final
+submission. No submission form was sent.
+
+Current automated results:
+
+- `flutter analyze`: passed, no issues.
+- `flutter build web`: passed, including the Wasm dry run.
+- `flutter test`: all 49 passed (10 controller/utility, 13 general widget,
+  18 audit integration/service cases, 8 Duo/version cases).
+- Formatting: passed, no files need changes.
+- Source icon: verified 1024×1024 RGB without alpha; iOS catalog references and
+  all five Android launcher densities exist.
+- Audit/README relative links: verified.
+
+## Previous Session 4 verification — 2026-11-17
 
 Environment: headless Linux Coder workspace. Flutter 3.47.9 stable, Dart 3.13.7.
 

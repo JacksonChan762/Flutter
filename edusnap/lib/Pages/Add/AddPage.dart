@@ -10,8 +10,9 @@ import '../../l10n/app_localizations.dart';
 import 'AddPageController.dart';
 
 class AddPage extends StatefulWidget {
-  const AddPage({super.key, this.entry});
+  const AddPage({super.key, this.entry, this.controller});
   final JournalEntry? entry;
+  final AddPageController? controller;
   @override
   State<AddPage> createState() => _AddPageState();
 }
@@ -22,7 +23,7 @@ class _AddPageState extends State<AddPage> {
   @override
   void initState() {
     super.initState();
-    controller = AddPageController(entry: widget.entry);
+    controller = widget.controller ?? AddPageController(entry: widget.entry);
   }
 
   @override
@@ -76,12 +77,17 @@ class _AddPageState extends State<AddPage> {
       ),
     );
     if (source == null || !mounted) return;
-    final result = await controller.pickPhoto(source);
+    final picking = controller.pickPhoto(source);
+    setState(() {});
+    final result = await picking;
     if (!mounted) return;
+    setState(() {});
     final sourceLabel = source == PhotoSource.camera
         ? l10n.photoSourceCamera
         : l10n.photoSourceGallery;
     switch (result.status) {
+      case PhotoPickStatus.cancelled:
+        break;
       case PhotoPickStatus.picked:
         setState(() {});
       case PhotoPickStatus.denied:
@@ -163,8 +169,8 @@ class _AddPageState extends State<AddPage> {
                 const SizedBox(height: 20),
                 _PhotoField(
                   photoPath: photoPath,
-                  onPick: choosePhoto,
-                  onRemove: removePhoto,
+                  onPick: controller.isPicking ? null : choosePhoto,
+                  onRemove: controller.isPicking ? null : removePhoto,
                   addLabel: photoPath == null
                       ? l10n.photoAdd
                       : l10n.photoChange,
@@ -172,7 +178,7 @@ class _AddPageState extends State<AddPage> {
                 ),
                 const SizedBox(height: 24),
                 FilledButton.icon(
-                  onPressed: save,
+                  onPressed: controller.isPicking ? null : save,
                   icon: const Icon(Icons.check),
                   label: Text(l10n.btnSave),
                 ),
@@ -195,8 +201,8 @@ class _PhotoField extends StatelessWidget {
   });
 
   final String? photoPath;
-  final VoidCallback onPick;
-  final VoidCallback onRemove;
+  final VoidCallback? onPick;
+  final VoidCallback? onRemove;
   final String addLabel;
   final String removeLabel;
 

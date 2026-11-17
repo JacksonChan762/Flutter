@@ -1,4 +1,6 @@
 // ignore_for_file: file_names
+import 'dart:math';
+
 /// Immutable data only. Identity and creation time survive edits.
 class JournalEntry {
   final String id;
@@ -15,8 +17,11 @@ class JournalEntry {
     required this.note,
     required this.createdAt,
     this.photoPath,
-  }) : id = id ?? 'entry-${_nextId++}';
-  static int _nextId = 0;
+  }) : id = id ?? _newId();
+
+  static final _random = Random.secure();
+  static String _newId() =>
+      'entry-${List.generate(16, (_) => _random.nextInt(256).toRadixString(16).padLeft(2, '0')).join()}';
 
   JournalEntry copyWith({
     String? title,

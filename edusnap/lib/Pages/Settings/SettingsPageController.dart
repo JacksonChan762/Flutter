@@ -14,6 +14,7 @@ class SettingsPageController extends ChangeNotifier {
 
   final PhotoStore _photoStore;
   final SettingsRepository _settingsRepository;
+  bool _disposed = false;
 
   String? _languageCode;
   String? get languageCode => _languageCode;
@@ -28,13 +29,13 @@ class SettingsPageController extends ChangeNotifier {
 
   Future<void> refreshSize() async {
     _usedBytes = await _photoStore.usedBytes();
-    notifyListeners();
+    _notify();
   }
 
   Future<void> changeLanguage(String code) async {
     _languageCode = code;
     await _settingsRepository.saveLanguageCode(code);
-    notifyListeners();
+    _notify();
   }
 
   /// Deletes stored photos not listed in [keep], then refreshes the size.
@@ -50,6 +51,16 @@ class SettingsPageController extends ChangeNotifier {
     await clearEntries();
     await _photoStore.deleteUnused(const <String>{});
     await refreshSize();
+  }
+
+  void _notify() {
+    if (!_disposed) notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 }
 

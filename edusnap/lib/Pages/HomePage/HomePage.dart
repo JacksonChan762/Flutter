@@ -1,4 +1,6 @@
 // ignore_for_file: file_names
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../Component/JournalCard/journal_card.dart';
@@ -28,11 +30,12 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   late final HomePageController controller;
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     controller = HomePageController(
       repository: widget.repository,
       photoStore: widget.photoStore,
@@ -41,8 +44,18 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     controller.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden) {
+      unawaited(controller.save());
+    }
   }
 
   Future<void> addEntry() async {

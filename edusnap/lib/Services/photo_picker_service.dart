@@ -1,9 +1,11 @@
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 enum PhotoSource { camera, gallery }
 
-enum PhotoPickStatus { picked, denied, failed }
+enum PhotoPickStatus { picked, cancelled, denied, failed }
 
 class PhotoPickResult {
   const PhotoPickResult(this.status, {this.path});
@@ -13,13 +15,24 @@ class PhotoPickResult {
 
 /// Asks for the permission that matches the source, then opens the picker.
 class PhotoPickerService {
-  PhotoPickerService({ImagePicker? picker}) : _picker = picker ?? ImagePicker();
+  PhotoPickerService({ImagePicker? picker, Future<int> Function()? androidSdk})
+    : _picker = picker ?? ImagePicker(),
+      _androidSdk =
+          androidSdk ??
+          (() async => (await DeviceInfoPlugin().androidInfo).version.sdkInt);
   final ImagePicker _picker;
+  final Future<int> Function() _androidSdk;
 
   Future<bool> requestPermission(PhotoSource source) async {
-    final permission = source == PhotoSource.camera
+    var permission = source == PhotoSource.camera
         ? Permission.camera
         : Permission.photos;
+    if (!kIsWeb &&
+        defaultTargetPlatform == TargetPlatform.android &&
+        source == PhotoSource.gallery &&
+        await _androidSdk() < 33) {
+      permission = Permission.storage;
+    }
     var status = await permission.status;
     if (status.isGranted || status.isLimited) return true;
     status = await permission.request();
@@ -27,10 +40,10 @@ class PhotoPickerService {
   }
 
   Future<PhotoPickResult> pick(PhotoSource source) async {
-    if (!await requestPermission(source)) {
-      return const PhotoPickResult(PhotoPickStatus.denied);
-    }
     try {
+      if (!await requestPermission(source)) {
+        return const PhotoPickResult(PhotoPickStatus.denied);
+      }
       final file = await _picker.pickImage(
         source: source == PhotoSource.camera
             ? ImageSource.camera
@@ -38,7 +51,7 @@ class PhotoPickerService {
         maxWidth: 1600,
         imageQuality: 85,
       );
-      if (file == null) return const PhotoPickResult(PhotoPickStatus.failed);
+      if (file == null) return const PhotoPickResult(PhotoPickStatus.cancelled);
       return PhotoPickResult(PhotoPickStatus.picked, path: file.path);
     } catch (_) {
       return const PhotoPickResult(PhotoPickStatus.failed);

@@ -39,7 +39,7 @@ Future<void> pumpApp(
       settingsRepository: settings,
       home: (onLanguageChanged) => HomePage(
         onLanguageChanged: onLanguageChanged,
-        repository: repository,
+        repository: repository ?? FakeJournalRepository(),
         photoStore: photos,
       ),
     ),
@@ -117,6 +117,7 @@ void main() {
     await tester.tap(find.text('New learning'));
     await tester.pumpAndSettle();
     expect(find.text('No note added.'), findsOneWidget);
+    expect(find.text('No photo'), findsOneWidget);
   });
 
   testWidgets('edit prefill, save, detail and list sync through system back', (
@@ -289,6 +290,21 @@ void main() {
           .first,
     );
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('journal is saved when the app enters the background', (
+    tester,
+  ) async {
+    final repo = FakeJournalRepository([sample('Background')]);
+    await pumpApp(tester, repository: repo);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    await tester.pump();
+    expect(repo.saveCount, 1);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    await tester.pump();
+    expect(repo.saveCount, 2);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pump();
   });
 
   testWidgets('narrow layout still renders cards', (tester) async {

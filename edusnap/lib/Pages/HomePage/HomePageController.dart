@@ -14,6 +14,8 @@ class HomePageController extends ChangeNotifier {
   final PhotoStore _photoStore;
   final List<JournalEntry> _entries = [];
   bool _loaded = false;
+  bool _disposed = false;
+  Future<void> _pendingSave = Future<void>.value();
 
   List<JournalEntry> get entries => List.unmodifiable(_entries);
   bool get isLoaded => _loaded;
@@ -25,12 +27,12 @@ class HomePageController extends ChangeNotifier {
       ..clear()
       ..addAll(stored);
     _loaded = true;
-    notifyListeners();
+    _notify();
   }
 
   Future<void> add(JournalEntry entry) async {
     _entries.insert(0, entry);
-    notifyListeners();
+    _notify();
     await _persist();
   }
 
@@ -39,29 +41,49 @@ class HomePageController extends ChangeNotifier {
     if (index < 0) return;
     final previous = _entries[index];
     _entries[index] = entry;
-    notifyListeners();
+    _notify();
+    await _persist();
     if (previous.photoPath != entry.photoPath) {
       await _photoStore.delete(previous.photoPath);
     }
-    await _persist();
   }
 
   Future<void> remove(JournalEntry entry) async {
     _entries.removeWhere((item) => item.id == entry.id);
-    notifyListeners();
-    await _photoStore.delete(entry.photoPath);
+    _notify();
     await _persist();
+    await _photoStore.delete(entry.photoPath);
   }
 
   /// Deletes every entry and its photo, then clears the stored list.
   Future<void> clearAll() async {
-    for (final entry in _entries) {
+    final removed = List<JournalEntry>.of(_entries);
+    _entries.clear();
+    _notify();
+    await _persist();
+    for (final entry in removed) {
       await _photoStore.delete(entry.photoPath);
     }
-    _entries.clear();
-    notifyListeners();
-    await _repository.clear();
   }
 
-  Future<void> _persist() => _repository.save(_entries);
+  /// Also called when the app becomes inactive or enters the background.
+  Future<void> save() => _loaded ? _persist() : Future<void>.value();
+
+  Future<void> _persist() {
+    final snapshot = List<JournalEntry>.of(_entries);
+    final write = _pendingSave.then((_) => _repository.save(snapshot));
+    // Preserve ordering without letting one failure block future writes.
+    _pendingSave = write.catchError((Object error) {});
+    return write;
+  }
+
+  void _notify() {
+    if (!_disposed) notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
 }

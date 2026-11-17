@@ -4,6 +4,10 @@ Offline photo journal with Home, Add/Edit, Detail and Settings pages. Entries,
 photos and language preferences persist on the device. The app follows the
 workshop MVC folders and supports English and Traditional Chinese.
 
+See the [complete audit of all four uploaded decks](docs/WORKSHOP_AUDIT.md).
+Fresh installs seed three sample entries once. Persisted edits/deletions survive
+reopening; cancelled photo edits preserve the saved file and remove draft copies.
+
 ## Session 4
 
 - Original EduSnap book-and-camera logo: [1024×1024 RGB PNG](assets/icon.png),

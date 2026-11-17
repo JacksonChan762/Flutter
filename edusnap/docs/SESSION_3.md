@@ -19,9 +19,13 @@ Workshop deck: `Itchi_Flutter_Session3.pdf` (Device, storage, language).
 - [x] Permission granted → picker opens; the picked image is copied into the
       app documents folder (`entry_photos/`) by `PhotoStore`.
 - [x] Permission denied → dialog explains why, with an “Open settings” button.
+- [x] Android gallery permissions select storage through API 32 and photos
+      from API 33. Limited access is accepted; cancelling the picker is quiet.
 - [x] The photo path is stored on `JournalEntry.photoPath`.
 - [x] Journal card shows a thumbnail (or a placeholder); Detail shows the photo.
 - [x] Photo can be replaced or removed; the old file is deleted.
+- [x] Cancelling an edit preserves the saved photo. New files are drafts until
+      Save; replaced saved files are deleted only after the journal is saved.
 
 ## Part 3 — Local storage
 
@@ -58,5 +62,7 @@ Workshop deck: `Itchi_Flutter_Session3.pdf` (Device, storage, language).
 
 This headless Coder workspace has no Android/iOS device, emulator or camera,
 so the real permission prompts and picker flow are **not** executed. Widget
-tests use fake pickers/storage; `flutter build web` only proves the web target
-compiles (image_picker on web uses file input, permission_handler is a no-op).
+tests mock native permission/picker calls. Additional tests exercise real
+temporary-file copies and actual JSON repository serialization. The web build
+only proves compilation; the current filesystem photo storage targets native
+platforms. See [the complete four-session audit](WORKSHOP_AUDIT.md).

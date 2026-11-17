@@ -140,7 +140,10 @@ class _SettingsPageState extends State<SettingsPage> {
                       label: Text(l10n.settingsLanguageChinese),
                     ),
                   ],
-                  selected: {controller.languageCode ?? 'en'},
+                  selected: {
+                    controller.languageCode ??
+                        Localizations.localeOf(context).languageCode,
+                  },
                   onSelectionChanged: (value) => selectLanguage(value.first),
                 ),
                 const Divider(height: 40),

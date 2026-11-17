@@ -11,7 +11,28 @@ class JournalRepository {
   Future<List<JournalEntry>> load() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(entriesKey);
-    if (raw == null || raw.isEmpty) return const [];
+    if (raw == null) {
+      final samples = [
+        JournalEntry(
+          title: 'Welcome to EduSnap',
+          note: 'Tap a card to view it, then use Edit to make it your own.',
+          createdAt: DateTime(2026, 1, 1),
+        ),
+        JournalEntry(
+          title: 'A moment of learning',
+          note: 'Use + to add a title, a note and a photo.',
+          createdAt: DateTime(2026, 1, 2),
+        ),
+        JournalEntry(
+          title: 'Make it yours',
+          note: 'Switch language in Settings, or swipe left to delete this sample.',
+          createdAt: DateTime(2026, 1, 3),
+        ),
+      ];
+      await save(samples);
+      return samples;
+    }
+    if (raw.isEmpty) return const [];
     try {
       final decoded = jsonDecode(raw);
       if (decoded is! List) return const [];
@@ -34,6 +55,7 @@ class JournalRepository {
 
   Future<void> clear() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(entriesKey);
+    // Retain an initialized empty list so clearing never brings samples back.
+    await prefs.setString(entriesKey, '[]');
   }
 }

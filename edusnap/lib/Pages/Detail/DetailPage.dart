@@ -70,7 +70,27 @@ class _DetailPageState extends State<DetailPage> {
               return ListView(
                 padding: const EdgeInsets.all(24),
                 children: [
-                  if (photoPath != null)
+                  if (photoPath == null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      child: Container(
+                        height: 160,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest,
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.photo_outlined, size: 48),
+                              const SizedBox(height: 8),
+                              Text(l10n.photoPlaceholder),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                  else
                     Padding(
                       padding: const EdgeInsets.only(bottom: 24),
                       child: ClipRRect(

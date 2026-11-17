@@ -6,11 +6,17 @@ An offline photo journal built for the ITCHI Flutter workshop, Sessions 1–4.
 Create a learning moment, attach a photo, revisit it, and switch between English
 and Traditional Chinese. The Flutter application is in [`edusnap/`](edusnap/).
 
+The [Sessions 1–4 audit](edusnap/docs/WORKSHOP_AUDIT.md) maps every uploaded
+workshop task and challenge to its implementation and verification. Application
+features are implemented; workstation setup and native device demonstrations
+remain explicitly listed as pending.
+
 ## Features
 
 | Area | What the app does |
 | --- | --- |
 | Journal | Add an entry with a required title and optional note/photo; open Detail, edit, or swipe left to delete with confirmation. |
+| First launch | Show three sample entries once; deleting or clearing them stays cleared after reopening. |
 | Photos | Pick from the camera or gallery, preview and remove photos, and copy them into the app documents directory for persistence. |
 | Storage | Save entries locally as JSON through `shared_preferences`; remove unused photos with Format; clear all entries/photos with two confirmations. |
 | Language | Translate the interface and dates into English or Traditional Chinese; restore the language choice on launch. |
@@ -21,6 +27,11 @@ and Traditional Chinese. The Flutter application is in [`edusnap/`](edusnap/).
 Data stays on the device; this app has no account or backend. Photo storage uses
 native filesystem APIs. Web compilation is checked, but browser photo storage
 and camera/gallery flows have not been verified; use a native target for them.
+
+Photo edits keep the original file until Save. Back discards draft photos,
+and picker cancellation leaves the form unchanged. Android gallery permissions
+use storage on API 32 and below and photos on API 33 and above. Journal saves
+also run when the app becomes inactive or enters the background.
 
 ## Requirements and setup
 
@@ -136,7 +147,7 @@ Local verification on **17 November 2026** with the SDK above:
 | --- | --- |
 | Formatting | Passed |
 | Static analysis | Passed, no issues |
-| Automated tests | All 30 passed |
+| Automated tests | All 49 passed |
 | Release web build | Passed, including the Wasm dry run |
 
 The tests cover journal CRUD, persistence callbacks, photo cleanup, editing,
@@ -166,6 +177,7 @@ Manual acceptance checks still require a native device/simulator:
 - [Session 2](edusnap/docs/SESSION_2.md)
 - [Session 3](edusnap/docs/SESSION_3.md)
 - [Session 4 implementation and acceptance checks](edusnap/README.md)
+- [Complete Sessions 1–4 requirement audit](edusnap/docs/WORKSHOP_AUDIT.md)
 
 The repository root in this workspace is the home directory. Its `.gitignore`
 allows only project files; keep personal configuration, credentials, SDKs and
