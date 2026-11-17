@@ -9,13 +9,25 @@ Environment: headless Linux Coder workspace. Flutter 3.47.9 stable, Dart 3.13.7.
 - Source PNG verified as 1024×1024 RGB (no alpha); all iOS catalog images exist.
 - `dart format --output=none --set-exit-if-changed lib test tool`: passed.
 - `flutter analyze`: passed, no issues.
-- `flutter test`: all 28 tests passed (20 existing, 8 Session 4 cases).
+- `flutter test`: all 30 tests passed (10 controller/utility, 12 general widget,
+  8 Session 4 cases).
 - `flutter build web`: passed, including the Wasm dry run.
 
 New tests exercise version/build metadata changes, native Back with a dialog
 above a page, hiding Back at home, subscription cleanup, unavailable/error rail
 fallback, retrying a native view after attachment, and expanding/restoring
 content width for fully-open, closed and half-screen folds.
+
+The follow-up checks reproduced two missed regressions before fixing them:
+Format deleted a photo still used by an entry, and Settings overflowed on a
+320×640 phone. Format now obtains the current referenced paths from Home;
+storage and photo-edit buttons wrap onto another line when needed. Both cases
+are covered by the passing widget suite.
+
+The first Session 4 GitHub Actions run failed during analysis because the
+moving stable SDK reported Material imports as deprecated. The workflow now
+pins Flutter 3.47.9 to match this verified environment. See the live Actions
+page for remote results; the local results above do not imply remote CI passed.
 
 Not performed in this Linux environment: iOS/Android builds or device runs,
 CocoaPods installation, home-screen/reinstall checks, real Duo native rail and

@@ -240,6 +240,57 @@ void main() {
     expect(repo.stored, hasLength(1));
   });
 
+  testWidgets('Format preserves entry photos and deletes only unused files', (
+    tester,
+  ) async {
+    final photos = FakePhotoStore()
+      ..files.addAll(['/photos/keep.jpg', '/photos/unused.jpg']);
+    final repo = FakeJournalRepository([
+      sample('Keep photo', photo: '/photos/keep.jpg'),
+    ]);
+    await pumpApp(tester, repository: repo, photos: photos);
+    await tester.tap(find.byTooltip('Settings'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('format-storage')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    expect(photos.files, {'/photos/keep.jpg'});
+    expect(repo.stored.single.photoPath, '/photos/keep.jpg');
+    expect(find.text('2 KB used'), findsOneWidget);
+  });
+
+  testWidgets('narrow settings and photo edit controls fit the screen', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await pumpApp(
+      tester,
+      repository: FakeJournalRepository([
+        sample('Photo entry', photo: '/photos/existing.jpg'),
+      ]),
+    );
+    await tester.tap(find.byTooltip('Settings'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    await back(tester);
+    await tester.tap(find.text('Photo entry'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Edit entry'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('remove-photo')),
+      100,
+      scrollable: find
+          .descendant(of: find.byType(Form), matching: find.byType(Scrollable))
+          .first,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('narrow layout still renders cards', (tester) async {
     tester.view.physicalSize = const Size(320, 640);
     tester.view.devicePixelRatio = 1;

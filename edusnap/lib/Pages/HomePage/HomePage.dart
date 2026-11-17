@@ -90,6 +90,10 @@ class _HomePageState extends State<HomePage> {
         builder: (_) => SettingsPage(
           onLanguageChanged: widget.onLanguageChanged,
           onClearAll: controller.clearAll,
+          referencedPhotoPaths: () => controller.entries
+              .map((entry) => entry.photoPath)
+              .whereType<String>()
+              .toSet(),
           photoStore: widget.photoStore,
         ),
       ),

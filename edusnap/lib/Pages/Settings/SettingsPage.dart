@@ -12,11 +12,13 @@ class SettingsPage extends StatefulWidget {
     super.key,
     required this.onLanguageChanged,
     required this.onClearAll,
+    required this.referencedPhotoPaths,
     this.photoStore,
   });
 
   final ValueChanged<String> onLanguageChanged;
   final Future<void> Function() onClearAll;
+  final Set<String> Function() referencedPhotoPaths;
   final PhotoStore? photoStore;
 
   @override
@@ -75,9 +77,9 @@ class _SettingsPageState extends State<SettingsPage> {
     )) {
       return;
     }
-    // Only photos still referenced by an entry are kept.
-    final keep = <String>{};
-    await controller.formatStorage(keep);
+    if (!mounted) return;
+    // Read after confirmation so cleanup uses the current journal state.
+    await controller.formatStorage(widget.referencedPhotoPaths());
     if (!mounted) return;
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(l10n.settingsFormatDone)));
@@ -157,7 +159,9 @@ class _SettingsPageState extends State<SettingsPage> {
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 const SizedBox(height: 12),
-                Row(
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 8,
                   children: [
                     OutlinedButton.icon(
                       key: const ValueKey('format-storage'),
@@ -165,7 +169,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       icon: const Icon(Icons.cleaning_services_outlined),
                       label: Text(l10n.settingsFormat),
                     ),
-                    const SizedBox(width: 12),
                     OutlinedButton.icon(
                       key: const ValueKey('clear-entries'),
                       onPressed: clearAll,

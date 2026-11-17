@@ -219,7 +219,9 @@ class _PhotoField extends StatelessWidget {
             ),
           ),
         ),
-      Row(
+      Wrap(
+        spacing: 12,
+        runSpacing: 8,
         children: [
           OutlinedButton.icon(
             key: const ValueKey('pick-photo'),
@@ -228,7 +230,6 @@ class _PhotoField extends StatelessWidget {
             label: Text(addLabel),
           ),
           if (photoPath != null) ...[
-            const SizedBox(width: 12),
             TextButton.icon(
               key: const ValueKey('remove-photo'),
               onPressed: onRemove,
