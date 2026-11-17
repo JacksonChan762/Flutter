@@ -1,6 +1,8 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../Component/DuoLayout/duo_layout.dart';
 import '../../Services/photo_store.dart';
 import '../../l10n/app_localizations.dart';
 import 'SettingsPageController.dart';
@@ -10,11 +12,13 @@ class SettingsPage extends StatefulWidget {
     super.key,
     required this.onLanguageChanged,
     required this.onClearAll,
+    required this.referencedPhotoPaths,
     this.photoStore,
   });
 
   final ValueChanged<String> onLanguageChanged;
   final Future<void> Function() onClearAll;
+  final Set<String> Function() referencedPhotoPaths;
   final PhotoStore? photoStore;
 
   @override
@@ -23,6 +27,7 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   late final SettingsPageController controller;
+  late final Future<PackageInfo> _packageInfo = PackageInfo.fromPlatform();
 
   @override
   void initState() {
@@ -72,9 +77,9 @@ class _SettingsPageState extends State<SettingsPage> {
     )) {
       return;
     }
-    // Only photos still referenced by an entry are kept.
-    final keep = <String>{};
-    await controller.formatStorage(keep);
+    if (!mounted) return;
+    // Read after confirmation so cleanup uses the current journal state.
+    await controller.formatStorage(widget.referencedPhotoPaths());
     if (!mounted) return;
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(l10n.settingsFormatDone)));
@@ -105,10 +110,15 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.settingsTitle)),
+      appBar: AppBar(
+        title: Text(l10n.settingsTitle),
+        automaticallyImplyLeading: !DuoLayoutScope.railActiveOf(context),
+      ),
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 720),
+          constraints: BoxConstraints(
+            maxWidth: DuoLayoutScope.contentWidthOf(context),
+          ),
           child: ListenableBuilder(
             listenable: controller,
             builder: (context, _) => ListView(
@@ -130,7 +140,10 @@ class _SettingsPageState extends State<SettingsPage> {
                       label: Text(l10n.settingsLanguageChinese),
                     ),
                   ],
-                  selected: {controller.languageCode ?? 'en'},
+                  selected: {
+                    controller.languageCode ??
+                        Localizations.localeOf(context).languageCode,
+                  },
                   onSelectionChanged: (value) => selectLanguage(value.first),
                 ),
                 const Divider(height: 40),
@@ -149,7 +162,9 @@ class _SettingsPageState extends State<SettingsPage> {
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 const SizedBox(height: 12),
-                Row(
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 8,
                   children: [
                     OutlinedButton.icon(
                       key: const ValueKey('format-storage'),
@@ -157,7 +172,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       icon: const Icon(Icons.cleaning_services_outlined),
                       label: Text(l10n.settingsFormat),
                     ),
-                    const SizedBox(width: 12),
                     OutlinedButton.icon(
                       key: const ValueKey('clear-entries'),
                       onPressed: clearAll,
@@ -173,6 +187,36 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(l10n.settingsAboutBody),
+                const SizedBox(height: 16),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.asset(
+                      'assets/icon.png',
+                      width: 48,
+                      height: 48,
+                    ),
+                  ),
+                  title: Text(l10n.settingsVersionTitle),
+                  subtitle: FutureBuilder<PackageInfo>(
+                    future: _packageInfo,
+                    builder: (context, snapshot) {
+                      final info = snapshot.data;
+                      return Text(
+                        info != null
+                            ? l10n.settingsVersion(
+                                info.version,
+                                info.buildNumber,
+                              )
+                            : snapshot.hasError
+                            ? l10n.settingsVersionUnavailable
+                            : l10n.settingsVersionLoading,
+                        key: const ValueKey('app-version'),
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
           ),

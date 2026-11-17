@@ -5,10 +5,16 @@ import 'package:path_provider/path_provider.dart';
 /// Owns the folder where entry photos are copied. Photos live outside the
 /// cache so they survive app restarts.
 class PhotoStore {
+  PhotoStore({Future<Directory> Function()? documentsDirectory})
+    : _documentsDirectory =
+          documentsDirectory ?? getApplicationDocumentsDirectory;
+
+  final Future<Directory> Function() _documentsDirectory;
+  static int _copySequence = 0;
   static const folderName = 'entry_photos';
 
   Future<Directory> _folder() async {
-    final base = await getApplicationDocumentsDirectory();
+    final base = await _documentsDirectory();
     final folder = Directory('${base.path}/$folderName');
     if (!await folder.exists()) await folder.create(recursive: true);
     return folder;
@@ -18,8 +24,11 @@ class PhotoStore {
   Future<String> save(String sourcePath, String entryId) async {
     final folder = await _folder();
     final extension = _extensionOf(sourcePath);
-    final target = File('${folder.path}/$entryId$extension');
-    if (target.existsSync()) await target.delete();
+    // Each draft is a new file. Editing must never overwrite a saved photo
+    // before the user commits the form.
+    final target = File(
+      '${folder.path}/$entryId-${DateTime.now().microsecondsSinceEpoch}-${_copySequence++}$extension',
+    );
     await File(sourcePath).copy(target.path);
     return target.path;
   }

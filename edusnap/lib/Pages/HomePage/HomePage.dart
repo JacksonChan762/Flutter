@@ -1,7 +1,10 @@
 // ignore_for_file: file_names
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../Component/JournalCard/journal_card.dart';
+import '../../Component/DuoLayout/duo_layout.dart';
 import '../../Models/JournalEntry.dart';
 import '../../Services/journal_repository.dart';
 import '../../Services/photo_store.dart';
@@ -27,11 +30,12 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   late final HomePageController controller;
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     controller = HomePageController(
       repository: widget.repository,
       photoStore: widget.photoStore,
@@ -40,8 +44,18 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     controller.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden) {
+      unawaited(controller.save());
+    }
   }
 
   Future<void> addEntry() async {
@@ -89,6 +103,10 @@ class _HomePageState extends State<HomePage> {
         builder: (_) => SettingsPage(
           onLanguageChanged: widget.onLanguageChanged,
           onClearAll: controller.clearAll,
+          referencedPhotoPaths: () => controller.entries
+              .map((entry) => entry.photoPath)
+              .whereType<String>()
+              .toSet(),
           photoStore: widget.photoStore,
         ),
       ),
@@ -116,7 +134,9 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 720),
+          constraints: BoxConstraints(
+            maxWidth: DuoLayoutScope.contentWidthOf(context),
+          ),
           child: ListenableBuilder(
             listenable: controller,
             builder: (context, _) {

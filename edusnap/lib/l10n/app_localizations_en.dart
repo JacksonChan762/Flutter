@@ -190,4 +190,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsAboutBody =>
       'EduSnap is an offline photo journal. Entries and photos are stored on this device only.';
+
+  @override
+  String get settingsVersionTitle => 'App version';
+
+  @override
+  String settingsVersion(String version, String build) {
+    return 'Version $version (build $build)';
+  }
+
+  @override
+  String get settingsVersionUnavailable => 'Version unavailable';
+
+  @override
+  String get settingsVersionLoading => 'Loading version…';
 }

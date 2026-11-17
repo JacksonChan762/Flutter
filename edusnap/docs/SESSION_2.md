@@ -1,5 +1,12 @@
 # Session 2 — Lifecycle, UI, navigation
 
+Historical milestone: commit `c35d785`. The uploaded PDF has now been read in
+full; see [the final audit](WORKSHOP_AUDIT.md) for current acceptance status.
+Session 3 added persistence. The final app seeds three cards only on first
+launch, preserves later edits/deletions, and does not restore cleared samples.
+It also saves when backgrounded; the memory-only walkthrough below records the
+earlier Session 2 behavior.
+
 Based on Itchi_Flutter_Session2.pdf, including the final Challenge.
 
 ## Acceptance checklist

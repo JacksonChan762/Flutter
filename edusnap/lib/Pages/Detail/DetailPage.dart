@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import '../../Models/JournalEntry.dart';
+import '../../Component/DuoLayout/duo_layout.dart';
 import '../../Utils/date_formatter.dart';
 import '../../l10n/app_localizations.dart';
 import '../Add/AddPage.dart';
@@ -46,6 +47,7 @@ class _DetailPageState extends State<DetailPage> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: !DuoLayoutScope.railActiveOf(context),
         title: Text(l10n.detailTitle),
         actions: [
           IconButton(
@@ -57,7 +59,9 @@ class _DetailPageState extends State<DetailPage> {
       ),
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 720),
+          constraints: BoxConstraints(
+            maxWidth: DuoLayoutScope.contentWidthOf(context),
+          ),
           child: ListenableBuilder(
             listenable: controller,
             builder: (context, _) {
@@ -66,7 +70,27 @@ class _DetailPageState extends State<DetailPage> {
               return ListView(
                 padding: const EdgeInsets.all(24),
                 children: [
-                  if (photoPath != null)
+                  if (photoPath == null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      child: Container(
+                        height: 160,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest,
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.photo_outlined, size: 48),
+                              const SizedBox(height: 8),
+                              Text(l10n.photoPlaceholder),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                  else
                     Padding(
                       padding: const EdgeInsets.only(bottom: 24),
                       child: ClipRRect(

@@ -186,4 +186,18 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settingsAboutBody => 'EduSnap 是離線相片日記。記錄和相片只儲存在本機。';
+
+  @override
+  String get settingsVersionTitle => '應用程式版本';
+
+  @override
+  String settingsVersion(String version, String build) {
+    return '版本 $version（組建 $build）';
+  }
+
+  @override
+  String get settingsVersionUnavailable => '無法取得版本';
+
+  @override
+  String get settingsVersionLoading => '正在讀取版本…';
 }

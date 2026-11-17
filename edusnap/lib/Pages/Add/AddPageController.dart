@@ -1,4 +1,6 @@
 // ignore_for_file: file_names
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../Models/JournalEntry.dart';
@@ -21,6 +23,10 @@ class AddPageController {
   final TextEditingController note;
   final PhotoPickerService _pickerService;
   final PhotoStore _photoStore;
+  final Set<String> _draftPhotos = {};
+  bool _disposed = false;
+  bool _picking = false;
+  bool get isPicking => _picking;
 
   /// Current photo shown on the form: the saved one until replaced.
   String? photoPath;
@@ -30,28 +36,51 @@ class AddPageController {
 
   /// Picks a photo and copies it into app storage. Returns the pick status.
   Future<PhotoPickResult> pickPhoto(PhotoSource source) async {
-    final result = await _pickerService.pick(source);
-    if (result.status != PhotoPickStatus.picked || result.path == null) {
-      return result;
+    if (_disposed || _picking) {
+      return const PhotoPickResult(PhotoPickStatus.cancelled);
     }
-    final id = entry?.id ?? 'draft-${DateTime.now().microsecondsSinceEpoch}';
-    final previous = photoPath;
-    photoPath = await _photoStore.save(result.path!, id);
-    if (previous != null && previous != photoPath) {
-      await _photoStore.delete(previous);
+    _picking = true;
+    try {
+      final result = await _pickerService.pick(source);
+      if (_disposed) return const PhotoPickResult(PhotoPickStatus.cancelled);
+      if (result.status != PhotoPickStatus.picked || result.path == null) {
+        return result;
+      }
+      final id = entry?.id ?? 'draft-${DateTime.now().microsecondsSinceEpoch}';
+      final copied = await _photoStore.save(result.path!, id);
+      if (_disposed) {
+        await _photoStore.delete(copied);
+        return const PhotoPickResult(PhotoPickStatus.cancelled);
+      }
+      final previous = photoPath;
+      _draftPhotos.add(copied);
+      photoPath = copied;
+      await _deleteDraft(previous);
+      return PhotoPickResult(PhotoPickStatus.picked, path: photoPath);
+    } catch (_) {
+      return const PhotoPickResult(PhotoPickStatus.failed);
+    } finally {
+      _picking = false;
     }
-    return PhotoPickResult(PhotoPickStatus.picked, path: photoPath);
   }
 
   Future<void> removePhoto() async {
     final previous = photoPath;
     photoPath = null;
-    await _photoStore.delete(previous);
+    await _deleteDraft(previous);
+  }
+
+  Future<void> _deleteDraft(String? path) async {
+    if (path != null && _draftPhotos.remove(path)) {
+      await _photoStore.delete(path);
+    }
   }
 
   JournalEntry? save() {
     final value = title.text.trim();
-    if (value.isEmpty) return null;
+    if (value.isEmpty || _picking || _disposed) return null;
+    // Ownership passes to the journal; disposal only removes uncommitted files.
+    _draftPhotos.remove(photoPath);
     return entry?.copyWith(
           title: value,
           note: note.text.trim(),
@@ -67,6 +96,10 @@ class AddPageController {
   }
 
   void dispose() {
+    _disposed = true;
+    for (final path in _draftPhotos.toList()) {
+      unawaited(_deleteDraft(path));
+    }
     title.dispose();
     note.dispose();
   }

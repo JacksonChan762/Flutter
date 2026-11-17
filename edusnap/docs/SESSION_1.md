@@ -1,5 +1,9 @@
 # Session 1 acceptance checklist
 
+Historical milestone: commit `0fcdb18`. The current app and all four uploaded
+decks are reviewed in [the final audit](WORKSHOP_AUDIT.md). Session 4 supersedes
+the private-repository setup step with a public-submission requirement.
+
 ## Implemented
 
 - Flutter project named `edusnap`, with Android, iOS and web scaffolding.
@@ -17,7 +21,8 @@
 - Cursor IDE and CLI installation, SourceTree installation.
 - Android SDK, emulator or attached device; iOS simulator requires macOS/Xcode.
 - Run `flutter run` on one of those devices and show the welcome screen.
-- Confirm the existing GitHub repository is private in repository settings.
+- Historical setup requested a private repository. The final submission now
+  requires public visibility; the repository is verified public.
 
 ## Deferred by the supplied course outline
 

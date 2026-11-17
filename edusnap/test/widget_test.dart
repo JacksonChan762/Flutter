@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:edusnap/main.dart';
 import 'package:edusnap/Pages/HomePage/HomePage.dart';
 import 'package:edusnap/Models/JournalEntry.dart';
@@ -25,13 +26,20 @@ Future<void> pumpApp(
   String? language,
 }) async {
   useEmptyPreferences();
+  PackageInfo.setMockInitialValues(
+    appName: 'EduSnap',
+    packageName: 'com.example.edusnap',
+    version: '1.1.0',
+    buildNumber: '2',
+    buildSignature: '',
+  );
   await tester.pumpWidget(
     EduSnapApp(
       initialLanguageCode: language,
       settingsRepository: settings,
       home: (onLanguageChanged) => HomePage(
         onLanguageChanged: onLanguageChanged,
-        repository: repository,
+        repository: repository ?? FakeJournalRepository(),
         photoStore: photos,
       ),
     ),
@@ -109,6 +117,7 @@ void main() {
     await tester.tap(find.text('New learning'));
     await tester.pumpAndSettle();
     expect(find.text('No note added.'), findsOneWidget);
+    expect(find.text('No photo'), findsOneWidget);
   });
 
   testWidgets('edit prefill, save, detail and list sync through system back', (
@@ -230,6 +239,72 @@ void main() {
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
     expect(repo.stored, hasLength(1));
+  });
+
+  testWidgets('Format preserves entry photos and deletes only unused files', (
+    tester,
+  ) async {
+    final photos = FakePhotoStore()
+      ..files.addAll(['/photos/keep.jpg', '/photos/unused.jpg']);
+    final repo = FakeJournalRepository([
+      sample('Keep photo', photo: '/photos/keep.jpg'),
+    ]);
+    await pumpApp(tester, repository: repo, photos: photos);
+    await tester.tap(find.byTooltip('Settings'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('format-storage')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    expect(photos.files, {'/photos/keep.jpg'});
+    expect(repo.stored.single.photoPath, '/photos/keep.jpg');
+    expect(find.text('2 KB used'), findsOneWidget);
+  });
+
+  testWidgets('narrow settings and photo edit controls fit the screen', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await pumpApp(
+      tester,
+      repository: FakeJournalRepository([
+        sample('Photo entry', photo: '/photos/existing.jpg'),
+      ]),
+    );
+    await tester.tap(find.byTooltip('Settings'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    await back(tester);
+    await tester.tap(find.text('Photo entry'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Edit entry'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('remove-photo')),
+      100,
+      scrollable: find
+          .descendant(of: find.byType(Form), matching: find.byType(Scrollable))
+          .first,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('journal is saved when the app enters the background', (
+    tester,
+  ) async {
+    final repo = FakeJournalRepository([sample('Background')]);
+    await pumpApp(tester, repository: repo);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    await tester.pump();
+    expect(repo.saveCount, 1);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    await tester.pump();
+    expect(repo.saveCount, 2);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pump();
   });
 
   testWidgets('narrow layout still renders cards', (tester) async {
