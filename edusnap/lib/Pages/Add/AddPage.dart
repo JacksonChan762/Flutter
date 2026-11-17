@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import '../../Models/JournalEntry.dart';
+import '../../Component/DuoLayout/duo_layout.dart';
 import '../../Services/photo_picker_service.dart';
 import '../../l10n/app_localizations.dart';
 import 'AddPageController.dart';
@@ -122,11 +123,14 @@ class _AddPageState extends State<AddPage> {
     final photoPath = controller.photoPath;
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: !DuoLayoutScope.railActiveOf(context),
         title: Text(controller.isEditing ? l10n.editTitle : l10n.addTitle),
       ),
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 720),
+          constraints: BoxConstraints(
+            maxWidth: DuoLayoutScope.contentWidthOf(context),
+          ),
           child: Form(
             key: formKey,
             child: ListView(

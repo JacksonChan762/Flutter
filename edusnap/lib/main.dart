@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'Pages/HomePage/HomePage.dart';
+import 'Component/DuoLayout/duo_layout.dart';
+import 'Services/duo_platform.dart';
 import 'Services/settings_repository.dart';
+import 'Theme/app_theme.dart';
 import 'l10n/app_localizations.dart';
 
 Future<void> main() async {
@@ -17,11 +20,13 @@ class EduSnapApp extends StatefulWidget {
     this.initialLanguageCode,
     this.settingsRepository,
     this.home,
+    this.duoPlatform,
   });
 
   /// Null means follow the device locale.
   final String? initialLanguageCode;
   final SettingsRepository? settingsRepository;
+  final DuoPlatform? duoPlatform;
 
   /// Overrides the home page; tests inject fake storage here.
   final Widget Function(ValueChanged<String> onLanguageChanged)? home;
@@ -31,6 +36,24 @@ class EduSnapApp extends StatefulWidget {
 }
 
 class _EduSnapAppState extends State<EduSnapApp> {
+  late final DuoLayoutController _duo = DuoLayoutController(
+    platform: widget.duoPlatform,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _duo.start();
+    });
+  }
+
+  @override
+  void dispose() {
+    _duo.dispose();
+    super.dispose();
+  }
+
   late final SettingsRepository _settings =
       widget.settingsRepository ?? SettingsRepository();
   late Locale? _locale = widget.initialLanguageCode == null
@@ -48,9 +71,12 @@ class _EduSnapAppState extends State<EduSnapApp> {
   Widget build(BuildContext context) => MaterialApp(
     onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
     debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF146C60)),
-      useMaterial3: true,
+    theme: AppTheme.light,
+    navigatorKey: _duo.navigatorKey,
+    navigatorObservers: [_duo.observer],
+    builder: (context, child) => DuoLayoutScope(
+      controller: _duo,
+      child: child ?? const SizedBox.shrink(),
     ),
     locale: _locale,
     supportedLocales: AppLocalizations.supportedLocales,

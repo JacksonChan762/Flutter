@@ -1,4 +1,33 @@
-# Verification — Session 3 — 2026-11-11
+# Verification — Session 4 — 2026-11-17
+
+Environment: headless Linux Coder workspace. Flutter 3.47.9 stable, Dart 3.13.7.
+
+- `flutter pub get`: passed, including the workshop Git plugin (resolved commit
+  `821121bfc3ebe540f344880904cf41ef355b5e66`).
+- `dart run tool/generate_icon.dart`: passed; regenerated Android, iOS and web
+  icons and preserved the Xcode Swift asset generation settings.
+- Source PNG verified as 1024×1024 RGB (no alpha); all iOS catalog images exist.
+- `dart format --output=none --set-exit-if-changed lib test tool`: passed.
+- `flutter analyze`: passed, no issues.
+- `flutter test`: all 28 tests passed (20 existing, 8 Session 4 cases).
+- `flutter build web`: passed, including the Wasm dry run.
+
+New tests exercise version/build metadata changes, native Back with a dialog
+above a page, hiding Back at home, subscription cleanup, unavailable/error rail
+fallback, retrying a native view after attachment, and expanding/restoring
+content width for fully-open, closed and half-screen folds.
+
+Not performed in this Linux environment: iOS/Android builds or device runs,
+CocoaPods installation, home-screen/reinstall checks, real Duo native rail and
+fold behavior, or real version-change/restart checks. This iOS project uses
+Swift Package Manager and the Duo plugin ships a Swift package; no Podfile is
+present. On a supported Mac, run `flutter pub get` then
+`flutter run -d "iPhone Duo"` and follow the README acceptance checks.
+Use CocoaPods installation only if the project is configured to use CocoaPods.
+Mocked plugin tests do not verify the upstream Swift code or simulator support.
+Remote GitHub Actions results are separate from these local checks.
+
+## Historical verification — Session 3 — 2026-11-11
 
 Environment: headless Linux Coder workspace `Flutter`.
 SDK: Flutter 3.47.9 stable; Dart 3.13.7.

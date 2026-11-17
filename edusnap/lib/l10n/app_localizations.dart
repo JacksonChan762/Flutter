@@ -433,6 +433,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'EduSnap is an offline photo journal. Entries and photos are stored on this device only.'**
   String get settingsAboutBody;
+
+  /// No description provided for @settingsVersionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App version'**
+  String get settingsVersionTitle;
+
+  /// No description provided for @settingsVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version} (build {build})'**
+  String settingsVersion(String version, String build);
+
+  /// No description provided for @settingsVersionUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Version unavailable'**
+  String get settingsVersionUnavailable;
+
+  /// No description provided for @settingsVersionLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading version…'**
+  String get settingsVersionLoading;
 }
 
 class _AppLocalizationsDelegate

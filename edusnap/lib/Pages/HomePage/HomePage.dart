@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import '../../Component/JournalCard/journal_card.dart';
+import '../../Component/DuoLayout/duo_layout.dart';
 import '../../Models/JournalEntry.dart';
 import '../../Services/journal_repository.dart';
 import '../../Services/photo_store.dart';
@@ -116,7 +117,9 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 720),
+          constraints: BoxConstraints(
+            maxWidth: DuoLayoutScope.contentWidthOf(context),
+          ),
           child: ListenableBuilder(
             listenable: controller,
             builder: (context, _) {

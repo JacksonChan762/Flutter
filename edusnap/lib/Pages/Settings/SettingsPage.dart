@@ -1,6 +1,8 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../Component/DuoLayout/duo_layout.dart';
 import '../../Services/photo_store.dart';
 import '../../l10n/app_localizations.dart';
 import 'SettingsPageController.dart';
@@ -23,6 +25,7 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   late final SettingsPageController controller;
+  late final Future<PackageInfo> _packageInfo = PackageInfo.fromPlatform();
 
   @override
   void initState() {
@@ -105,10 +108,15 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.settingsTitle)),
+      appBar: AppBar(
+        title: Text(l10n.settingsTitle),
+        automaticallyImplyLeading: !DuoLayoutScope.railActiveOf(context),
+      ),
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 720),
+          constraints: BoxConstraints(
+            maxWidth: DuoLayoutScope.contentWidthOf(context),
+          ),
           child: ListenableBuilder(
             listenable: controller,
             builder: (context, _) => ListView(
@@ -173,6 +181,36 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(l10n.settingsAboutBody),
+                const SizedBox(height: 16),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.asset(
+                      'assets/icon.png',
+                      width: 48,
+                      height: 48,
+                    ),
+                  ),
+                  title: Text(l10n.settingsVersionTitle),
+                  subtitle: FutureBuilder<PackageInfo>(
+                    future: _packageInfo,
+                    builder: (context, snapshot) {
+                      final info = snapshot.data;
+                      return Text(
+                        info != null
+                            ? l10n.settingsVersion(
+                                info.version,
+                                info.buildNumber,
+                              )
+                            : snapshot.hasError
+                            ? l10n.settingsVersionUnavailable
+                            : l10n.settingsVersionLoading,
+                        key: const ValueKey('app-version'),
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
           ),

@@ -90,5 +90,19 @@
   "settingsClearFinalBody": "This permanently deletes all entries and photos.",
   "settingsClearDone": "All entries cleared.",
   "settingsAboutSection": "About EduSnap",
-  "settingsAboutBody": "EduSnap is an offline photo journal. Entries and photos are stored on this device only."
+  "settingsAboutBody": "EduSnap is an offline photo journal. Entries and photos are stored on this device only.",
+  "settingsVersionTitle": "App version",
+  "settingsVersion": "Version {version} (build {build})",
+  "@settingsVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsVersionUnavailable": "Version unavailable",
+  "settingsVersionLoading": "Loading version…"
 }

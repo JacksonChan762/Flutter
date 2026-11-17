@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:edusnap/main.dart';
 import 'package:edusnap/Pages/HomePage/HomePage.dart';
 import 'package:edusnap/Models/JournalEntry.dart';
@@ -25,6 +26,13 @@ Future<void> pumpApp(
   String? language,
 }) async {
   useEmptyPreferences();
+  PackageInfo.setMockInitialValues(
+    appName: 'EduSnap',
+    packageName: 'com.example.edusnap',
+    version: '1.1.0',
+    buildNumber: '2',
+    buildSignature: '',
+  );
   await tester.pumpWidget(
     EduSnapApp(
       initialLanguageCode: language,

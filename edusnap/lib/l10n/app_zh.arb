@@ -90,5 +90,19 @@
   "settingsClearFinalBody": "此操作會永久刪除所有記錄和相片。",
   "settingsClearDone": "已清除所有記錄。",
   "settingsAboutSection": "關於 EduSnap",
-  "settingsAboutBody": "EduSnap 是離線相片日記。記錄和相片只儲存在本機。"
+  "settingsAboutBody": "EduSnap 是離線相片日記。記錄和相片只儲存在本機。",
+  "settingsVersionTitle": "應用程式版本",
+  "settingsVersion": "版本 {version}（組建 {build}）",
+  "@settingsVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsVersionUnavailable": "無法取得版本",
+  "settingsVersionLoading": "正在讀取版本…"
 }
