@@ -4,6 +4,7 @@ import 'package:edusnap/Pages/HomePage/HomePage.dart';
 import 'package:edusnap/Services/duo_platform.dart';
 import 'package:edusnap/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:itchi_flutter_duo_layout/itchi_flutter_duo_layout.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -51,7 +52,7 @@ void mockVersion(String version, String build) {
   );
 }
 
-Future<void> launch(WidgetTester tester, {FakeDuoPlatform? duo}) async {
+Future<void> launch(WidgetTester tester, {DuoPlatform? duo}) async {
   useEmptyPreferences();
   mockVersion('9.8.7', '42');
   await tester.pumpWidget(
@@ -121,6 +122,50 @@ void main() {
     expect(duo.backController.hasListener, isFalse);
     expect(duo.visibility.last, isFalse);
   });
+
+  testWidgets('one native Duo tap dismisses only the top route', (
+    tester,
+  ) async {
+    const rail = MethodChannel('itchi_flutter_duo_layout/side_back');
+    const fold = MethodChannel('itchi_flutter_duo_layout/fold');
+    const codec = StandardMethodCodec();
+    final messenger = tester.binding.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(
+      rail,
+      (call) async => {'status': 'available'},
+    );
+    messenger.setMockMethodCallHandler(fold, (call) async => null);
+
+    Future<void> tapNativeBack() async {
+      await messenger.handlePlatformMessage(
+        rail.name,
+        codec.encodeMethodCall(const MethodCall('onItemTap', {'id': 'back'})),
+        null,
+      );
+      await tester.pump();
+      await messenger.handlePlatformMessage(
+        rail.name,
+        codec.encodeMethodCall(const MethodCall('onBack')),
+        null,
+      );
+      await tester.pumpAndSettle();
+    }
+
+    await launch(tester, duo: PluginDuoPlatform());
+    await tester.tap(find.byTooltip('Add entry'));
+    await tester.pumpAndSettle();
+    expect(find.byType(BackButton), findsNothing);
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    expect(find.text('Title missing'), findsOneWidget);
+
+    await tapNativeBack();
+    expect(find.text('Title missing'), findsNothing);
+    expect(find.byType(Form), findsOneWidget);
+
+    await tapNativeBack();
+    expect(find.byType(Form), findsNothing);
+  }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
 
   for (final status in [
     ItchiSideBackStatus.unsupportedPlatform,
